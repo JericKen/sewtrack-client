@@ -19,7 +19,7 @@ function Products() {
     async function handleAddProduct() {
         const product = {
             name: "Test create product",
-            category_id: -1,
+            category_id: 1,
             quantity: 10,
             selling_price: 50
         }
