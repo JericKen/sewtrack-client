@@ -1,6 +1,6 @@
 import ProductRow from "./ProductRow";
 
-export default function ProductTable({ products }) {
+export default function ProductTable({ products, onHandleUpdate, onHandleDelete }) {
     if (products.length === 0) {
         return (
             <h3 className="pl-6 mt-6">No products found.</h3>
@@ -24,6 +24,8 @@ export default function ProductTable({ products }) {
                         <ProductRow 
                             key={product.id}
                             product={product}
+                            onHandleDelete={onHandleDelete}
+                            onHandleUpdate={onHandleUpdate}
                         />
                     ))}
                 </tbody>

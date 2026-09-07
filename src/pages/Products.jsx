@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useProducts from "../hooks/useProducts";
-import ProductTable from "../components/ProductTable";
-import PageHeader from "../components/ProductPageHeader";
+import ProductTable from "../components/products/ProductTable";
+import PageHeader from "../components/products/ProductPageHeader";
 import SearchBar from "../components/SearchBar";
 
 function Products() {
@@ -13,7 +13,8 @@ function Products() {
         setSearch,
         createProduct,
         createLoading,
-        createError
+        createError,
+        deleteProduct
     } = useProducts();
 
     async function handleAddProduct() {
@@ -24,6 +25,10 @@ function Products() {
             selling_price: 50
         }
         await createProduct(product);
+    }
+
+    async function handleDeleteProduct(id) {
+        await deleteProduct(id)
     }
 
     async function handleSearch(value) {
@@ -54,7 +59,10 @@ function Products() {
                 onHandleSearch={handleSearch}
                 placeholder={"Search name or SKU..."}
             />
-            <ProductTable products={products}/>
+            <ProductTable 
+                products={products}
+                onHandleDelete={handleDeleteProduct}
+            />
         </div>
     );
 }
