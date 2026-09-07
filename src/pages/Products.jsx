@@ -1,8 +1,22 @@
 import { useState, useEffect } from "react";
-import { getProducts } from "../services/productService";
 import { formatCurrency } from "../utils/currency";
+import Button from "../components/Button";
+import useProducts from "../hooks/useProducts";
 
-function PageHeader({ title, buttonText, onHandleAdd}) {
+function ActionCell({ product, onHandleUpdate, onHandleDelete }) {
+    return (
+        <div className="flex justify-center items-center gap-[20px] w-[300px] p-1">
+            <Button onHandleClick={onHandleUpdate}>
+                Update
+            </Button>
+            <Button onHandleClick={onHandleDelete}>
+                Delete
+            </Button>
+        </div>
+    );
+}
+
+function PageHeader({ title, buttonText, onHandleAdd, createLoading}) {
     return (
         <div className="flex justify-between items-center p-6 mb-6 bg-[#f1f1f1] shadow">
             <h3 className="">{title}</h3>
@@ -10,7 +24,7 @@ function PageHeader({ title, buttonText, onHandleAdd}) {
                 className="py-1 px-4 bg-black rounded-lg text-white "
                 onClick={onHandleAdd}
             >
-                {buttonText}
+                {createLoading ? "..." : buttonText}
             </button>
         </div>
     );
@@ -31,7 +45,8 @@ function ProductTable({ products }) {
                         <th className="border p-1">Name</th>
                         <th className="border">SKU</th>
                         <th className="border">Quantity</th>
-                        <th className="border   ">Selling Price</th>
+                        <th className="border">Selling Price</th>
+                        <th className="border w-[300px]">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,6 +69,13 @@ function ProductRow({ product }) {
             <td className="border text-center">{product.sku}</td>
             <td className="border text-center">{product.quantity}</td>
             <td className="border text-center">{formatCurrency(product.selling_price)}</td>
+            <td className="border">
+                <ActionCell 
+                    product={product} 
+                    onHandleDelete={() => alert(product.name)} 
+                    onHandleUpdate={() => alert(product.id)}
+                />
+            </td>
         </tr>
     );
 }
@@ -73,35 +95,29 @@ function SearchBar({ value, onHandleSearch, placeholder }) {
 }
 
 function Products() {
-    const [products, setProducts] = useState([]);
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState("");
+    const {
+        products,
+        loading,
+        error,
+        search,
+        setSearch,
+        createProduct,
+        createLoading
+    } = useProducts();
 
-    function handleAddProduct() {
-        alert("Test");
+    async function handleAddProduct() {
+        const product = {
+            name: "Test add product",
+            category_id: 1,
+            quantity: 10,
+            selling_price: 50
+        }
+        await createProduct(product);
     }
 
-    useEffect(() => {
-        async function loadProducts() {
-            try {
-                const response = await getProducts();
-
-                if (!response.success) {
-                    setError(response.message);
-                    return;
-                }
-
-                setProducts(response.data)
-            } catch (e) {
-                setError(e.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        loadProducts();
-    }, []);
+    async function handleSearch(value) {
+        setSearch(value);
+    }
 
     if (loading) {
         return <h3>Loading products...</h3>
@@ -117,10 +133,11 @@ function Products() {
                 title={"Products"} 
                 buttonText={"Add Product"}
                 onHandleAdd={handleAddProduct}
+                createLoading={createLoading}
             />
             <SearchBar 
                 value={search}
-                onHandleSearch={(value) => setSearch(value)}
+                onHandleSearch={handleSearch}
                 placeholder={"Search name or SKU..."}
             />
             <ProductTable products={products}/>
