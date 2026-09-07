@@ -20,7 +20,7 @@ export default function useProducts() {
 
             setProducts(response.data);
         } catch (e) {
-            setError(e.message);
+            setError(normalizeError(e));
         } finally {
             setLoading(false);
         }
@@ -51,5 +51,5 @@ export default function useProducts() {
         createProduct,
         createLoading,
         createError
-    }
+    };
 }

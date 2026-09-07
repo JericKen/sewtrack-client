@@ -36,7 +36,8 @@ function Products() {
 
     if (error || createError) {
         console.log(createError);
-        return <h3>{error || createError.message}</h3>
+        console.log(error);
+        return <h3>{error.message || createError.message}</h3>
     }
 
     return (
