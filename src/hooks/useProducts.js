@@ -1,5 +1,6 @@
 import { getProducts, addProduct } from "../services/productService";
 import { useState, useEffect, useSyncExternalStore } from "react";
+import normalizeError from "../utils/normalizeError";
 
 export default function useProducts() {
     const [products, setProducts] = useState([]);
@@ -7,10 +8,11 @@ export default function useProducts() {
     const [error, setError] = useState("");
     const [search, setSearch] = useState("");
     const [createLoading, setCreateLoading] = useState(false);
+    const [createError, setCreateError] = useState("");
 
     async function fetchProducts(search = "") {
         try {
-            const response = await getProducts(search);  
+            const response = await getProducts(search);
             
             if (!response.success) {
                 throw new Error("Failed to retrieve product.");
@@ -32,12 +34,9 @@ export default function useProducts() {
         try {
             setCreateLoading(true);
             const response = await addProduct(product);
-
-            if (!response.success) {
-                throw new Error("Error");
-            }
-        } catch (e) {
-            setError(e);
+            console.log(response);
+        } catch (e) { 
+            setCreateError(normalizeError(e));
         } finally {
             setCreateLoading(false);
         }
@@ -50,6 +49,7 @@ export default function useProducts() {
         search,
         setSearch,
         createProduct,
-        createLoading
+        createLoading,
+        createError
     }
 }

@@ -12,13 +12,14 @@ function Products() {
         search,
         setSearch,
         createProduct,
-        createLoading
+        createLoading,
+        createError
     } = useProducts();
 
     async function handleAddProduct() {
         const product = {
-            name: "Test add product",
-            category_id: 1,
+            name: "Test create product",
+            category_id: -1,
             quantity: 10,
             selling_price: 50
         }
@@ -33,8 +34,9 @@ function Products() {
         return <h3>Loading products...</h3>
     }
 
-    if (error) {
-        return <h3>{error}</h3>
+    if (error || createError) {
+        console.log(createError);
+        return <h3>{error || createError.message}</h3>
     }
 
     return (
@@ -44,6 +46,7 @@ function Products() {
                 buttonText={"Add Product"}
                 onHandleAdd={handleAddProduct}
                 createLoading={createLoading}
+                createError={createError}
             />
             <SearchBar 
                 value={search}
