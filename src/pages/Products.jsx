@@ -3,6 +3,7 @@ import useProducts from "../hooks/useProducts";
 import ProductTable from "../components/products/ProductTable";
 import PageHeader from "../components/products/ProductPageHeader";
 import SearchBar from "../components/SearchBar";
+import ProductForm from "../components/products/ProductForm";
 
 function Products() {
     const {
@@ -39,10 +40,8 @@ function Products() {
         return <h3>Loading products...</h3>
     }
 
-    if (error || createError) {
-        console.log(createError);
-        console.log(error);
-        return <h3>{error.message || createError.message}</h3>
+    if (error) {
+        return <h3>{error.message}</h3>
     }
 
     return (
@@ -63,6 +62,7 @@ function Products() {
                 products={products}
                 onHandleDelete={handleDeleteProduct}
             />
+            <ProductForm onSubmit={createProduct}/>
         </div>
     );
 }

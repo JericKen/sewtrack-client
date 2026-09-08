@@ -40,8 +40,8 @@ export default function useProducts() {
             const newProduct = response.data;
 
             setProducts(currentProducts => [
-                ...currentProducts,
-                newProduct
+                newProduct,
+                ...currentProducts
             ]);
         } catch (e) { 
             setCreateError(normalizeError(e));
