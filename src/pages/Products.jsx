@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import useProducts from "../hooks/useProducts";
-import ProductTable from "../components/ProductTable";
-import PageHeader from "../components/ProductPageHeader";
+import ProductTable from "../components/products/ProductTable";
+import PageHeader from "../components/products/ProductPageHeader";
 import SearchBar from "../components/SearchBar";
+import ProductForm from "../components/products/ProductForm";
 
 function Products() {
     const {
@@ -13,17 +14,22 @@ function Products() {
         setSearch,
         createProduct,
         createLoading,
-        createError
+        createError,
+        deleteProduct
     } = useProducts();
 
     async function handleAddProduct() {
         const product = {
             name: "Test create product",
-            category_id: -1,
+            category_id: 1,
             quantity: 10,
             selling_price: 50
         }
         await createProduct(product);
+    }
+
+    async function handleDeleteProduct(id) {
+        await deleteProduct(id)
     }
 
     async function handleSearch(value) {
@@ -34,9 +40,8 @@ function Products() {
         return <h3>Loading products...</h3>
     }
 
-    if (error || createError) {
-        console.log(createError);
-        return <h3>{error || createError.message}</h3>
+    if (error) {
+        return <h3>{error.message}</h3>
     }
 
     return (
@@ -53,7 +58,11 @@ function Products() {
                 onHandleSearch={handleSearch}
                 placeholder={"Search name or SKU..."}
             />
-            <ProductTable products={products}/>
+            <ProductTable 
+                products={products}
+                onHandleDelete={handleDeleteProduct}
+            />
+            <ProductForm onSubmit={createProduct}/>
         </div>
     );
 }

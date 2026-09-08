@@ -1,10 +1,14 @@
 export default function normalizeError(error) {
     if (error.response) {
+        const message = 
+            error.response.status === 500 
+                ? "Something went wrong."
+                : error.response.data?.message;
+
         return {
             type: "server",
             status: error.response.status,
-            message: error.response.data?.message ||
-                "Something went wrong.",
+            message,
             errors: error.response.data?.errors || null
         }
     }

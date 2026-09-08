@@ -1,7 +1,7 @@
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency } from "../../utils/currency";
 import ActionCell from "./ProductActionCell";
 
-export default function ProductRow({ product }) {
+export default function ProductRow({ product, onHandleUpdate, onHandleDelete }) {
     return (
         <tr>
             <td className="border p-1">{product.name}</td>
@@ -11,8 +11,8 @@ export default function ProductRow({ product }) {
             <td className="border">
                 <ActionCell 
                     product={product} 
-                    onHandleDelete={() => alert(product.name)} 
-                    onHandleUpdate={() => alert(product.id)}
+                    onHandleDelete={() => onHandleDelete(product.id)} 
+                    onHandleUpdate={onHandleUpdate}
                 />
             </td>
         </tr>

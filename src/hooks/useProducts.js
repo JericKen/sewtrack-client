@@ -1,26 +1,28 @@
-import { getProducts, addProduct } from "../services/productService";
+import { 
+    getProducts, 
+    addProduct, 
+    removeProduct 
+} from "../services/productService";
 import { useState, useEffect, useSyncExternalStore } from "react";
 import normalizeError from "../utils/normalizeError";
 
 export default function useProducts() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
     const [createLoading, setCreateLoading] = useState(false);
-    const [createError, setCreateError] = useState("");
+    const [createError, setCreateError] = useState(null);
 
     async function fetchProducts(search = "") {
         try {
+            setError(null);
+
             const response = await getProducts(search);
-            
-            if (!response.success) {
-                throw new Error("Failed to retrieve product.");
-            }
 
             setProducts(response.data);
         } catch (e) {
-            setError(e.message);
+            setError(normalizeError(e));
         } finally {
             setLoading(false);
         }
@@ -34,11 +36,27 @@ export default function useProducts() {
         try {
             setCreateLoading(true);
             const response = await addProduct(product);
-            console.log(response);
+            
+            const newProduct = response.data;
+
+            setProducts(currentProducts => [
+                newProduct,
+                ...currentProducts
+            ]);
         } catch (e) { 
             setCreateError(normalizeError(e));
         } finally {
             setCreateLoading(false);
+        }
+    }
+
+    async function deleteProduct(id) {
+        try {
+            await removeProduct(id);
+        } catch (e) {
+            
+        } finally {
+
         }
     }
 
@@ -50,6 +68,7 @@ export default function useProducts() {
         setSearch,
         createProduct,
         createLoading,
-        createError
-    }
+        createError,
+        deleteProduct
+    };
 }
