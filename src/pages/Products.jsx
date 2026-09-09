@@ -6,6 +6,8 @@ import SearchBar from "../components/SearchBar";
 import ProductForm from "../components/products/ProductForm";
 
 function Products() {
+    const [isEditing, setIsEditing] = useState(false);
+
     const {
         products,
         loading,
@@ -15,6 +17,7 @@ function Products() {
         createProduct,
         createLoading,
         createError,
+        updateProduct,
         deleteProduct
     } = useProducts();
 
@@ -26,10 +29,6 @@ function Products() {
             selling_price: 50
         }
         await createProduct(product);
-    }
-
-    async function handleDeleteProduct(id) {
-        await deleteProduct(id)
     }
 
     async function handleSearch(value) {
@@ -60,9 +59,14 @@ function Products() {
             />
             <ProductTable 
                 products={products}
-                onHandleDelete={handleDeleteProduct}
+                onHandleDelete={(id) => deleteProduct(id)}
             />
-            <ProductForm onSubmit={createProduct}/>
+            <ProductForm 
+                onSubmit={isEditing 
+                    ? updateProduct
+                    : createProduct
+                }
+            />
         </div>
     );
 }

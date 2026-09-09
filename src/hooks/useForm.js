@@ -28,11 +28,12 @@ function useForm({ initialValue, validate, onSubmit }) {
 
         try {
             setLoading(true);
-            const message = await onSubmit(values);
-            setMessage(message);
-            reset();
+            const response = await onSubmit(values);
+            setMessage(response.message);
         } catch (e) {
-            setMessage(normalizeError(e));
+            const error = normalizeError(e);
+            console.log(error);
+            setMessage(error.message);
         } finally {
             setLoading(false);
         }

@@ -1,13 +1,7 @@
 import useForm from "../../hooks/useForm";
+import Button from "../Button";
 
-function ProductForm({ onSubmit }) {
-    const initialValue = {
-        name: "", 
-        category_id: "",
-        quantity: "",
-        selling_price: ""
-    };
-
+function ProductForm({ onSubmit, isEditing, editingId, initialValue }) {
     const {
         values,
         errors,
@@ -25,7 +19,7 @@ function ProductForm({ onSubmit }) {
             category_id: "",
             quantity: "",
             selling_price: ""
-        }
+        };
 
         if (!name.trim()) {
             newErrors.name = "Name is required.";
@@ -47,7 +41,7 @@ function ProductForm({ onSubmit }) {
     }
 
     return (
-        <div>
+        <div className="p-6">
             <form onSubmit={handleSubmit}>
                 <label>Name: {" "}
                     <input 
@@ -55,6 +49,7 @@ function ProductForm({ onSubmit }) {
                         value={values.name}
                         onChange={handleChange}
                         name="name"
+                        className="border rounded"
                     />
                 </label>
                 <br />
@@ -64,6 +59,7 @@ function ProductForm({ onSubmit }) {
                         value={values.category_id}
                         onChange={handleChange}
                         name="category_id"
+                        className="border rounded"
                     />
                 </label>
                 <br />
@@ -73,6 +69,7 @@ function ProductForm({ onSubmit }) {
                         value={values.quantity}
                         onChange={handleChange}
                         name="quantity"
+                        className="border rounded"
                     />
                 </label>
                 <br />
@@ -82,15 +79,16 @@ function ProductForm({ onSubmit }) {
                         value={values.selling_price}
                         onChange={handleChange}
                         name="selling_price"
+                        className="border rounded"
                     />
                 </label>
                 <br />
-                <button type="submit" disabled={loading}>
-                    {loading 
+                <Button type={"submit"} disabled={loading}>
+                     {loading 
                         ? "Saving..."
                         : "Save"
                     }
-                </button>
+                </Button>
             </form>
 
             <p>{errors.name}</p>

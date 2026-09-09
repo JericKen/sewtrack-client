@@ -1,7 +1,8 @@
 import { 
     getProducts, 
     addProduct, 
-    removeProduct 
+    removeProduct, 
+    editProduct
 } from "../services/productService";
 import { useState, useEffect, useSyncExternalStore } from "react";
 import normalizeError from "../utils/normalizeError";
@@ -11,8 +12,7 @@ export default function useProducts() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
-    const [createLoading, setCreateLoading] = useState(false);
-    const [createError, setCreateError] = useState(null);
+    const [message, setMessage] = useState("");
 
     async function fetchProducts(search = "") {
         try {
@@ -33,31 +33,41 @@ export default function useProducts() {
     }, [search]);
     
     async function createProduct(product) {
-        try {
-            setCreateLoading(true);
-            const response = await addProduct(product);
-            
-            const newProduct = response.data;
+        const response = await addProduct(product);
+        const newProduct = response.data;
 
-            setProducts(currentProducts => [
-                newProduct,
-                ...currentProducts
-            ]);
-        } catch (e) { 
-            setCreateError(normalizeError(e));
-        } finally {
-            setCreateLoading(false);
-        }
+        setProducts(currentProducts => [
+            newProduct,
+            ...currentProducts
+        ]);
+        return response;
+    }
+
+    async function updateProduct(product) {
+        const response = await editProduct(product);
+        const updatedProduct = response.data;
+
+        setProducts(currentProducts => [
+            ...currentProducts,
+            updatedProduct
+        ]);
+        return response;
     }
 
     async function deleteProduct(id) {
         try {
-            await removeProduct(id);
-        } catch (e) {
-            
-        } finally {
+            const response = await removeProduct(id);
 
-        }
+            setProducts(products => products.filter(product => 
+                product.id !== id
+            ));
+
+            setMessage(response.message);
+        } catch (e) {
+            const error = normalizeError(e);
+            console.log(error);
+            setError(error.message);
+        } 
     }
 
     return {
@@ -65,10 +75,10 @@ export default function useProducts() {
         loading,
         error,
         search,
+        message,
         setSearch,
         createProduct,
-        createLoading,
-        createError,
+        updateProduct,
         deleteProduct
     };
 }
