@@ -1,6 +1,19 @@
 import { useState } from "react";
 import normalizeError from "../utils/normalizeError";
 
+function mapServerErrors(serverErrors) {
+    if (!serverErrors) {
+        return {};
+    }
+
+    return Object.fromEntries(
+        Object.entries(serverErrors).map(([field, messages]) => [
+            field,
+            Array.isArray(messages) ? messages[0] : messages
+        ])
+    )
+}
+
 function useForm({ initialValue, validate, onSubmit }) {
     const [loading, setLoading] = useState(false);
     const [values, setValues] = useState(initialValue);
@@ -21,7 +34,7 @@ function useForm({ initialValue, validate, onSubmit }) {
 
         const newErrors = validate(values);
 
-        if (Object.values(newErrors).some(error => error)) {
+        if (Object.values(newErrors).some(Boolean)) {
             setErrors(newErrors);
             return;
         }
@@ -33,6 +46,7 @@ function useForm({ initialValue, validate, onSubmit }) {
         } catch (e) {
             const error = normalizeError(e);
             console.log(error);
+            setErrors(mapServerErrors(error.errors));
             setMessage(error.message);
         } finally {
             setLoading(false);
@@ -50,6 +64,7 @@ function useForm({ initialValue, validate, onSubmit }) {
         errors,
         message,
         loading,
+        reset,
         handleChange,
         handleSubmit
     };

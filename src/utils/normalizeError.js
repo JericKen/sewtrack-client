@@ -1,4 +1,5 @@
 export default function normalizeError(error) {
+    console.log(error.response);
     if (error.response) {
         const message = 
             error.response.status === 500 

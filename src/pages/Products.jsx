@@ -6,7 +6,7 @@ import SearchBar from "../components/SearchBar";
 import ProductForm from "../components/products/ProductForm";
 
 function Products() {
-    const [isEditing, setIsEditing] = useState(false);
+    const [isFormOpen, setIsFormOpen] = useState(false);
 
     const {
         products,
@@ -17,30 +17,17 @@ function Products() {
         createProduct,
         createLoading,
         createError,
-        updateProduct,
         deleteProduct
     } = useProducts();
 
-    async function handleAddProduct() {
-        const product = {
-            name: "Test create product",
-            category_id: 1,
-            quantity: 10,
-            selling_price: 50
-        }
-        await createProduct(product);
+    async function handleCreateProduct(product) {
+        const response = await createProduct(product);
+        setIsFormOpen(false);
+        return response;
     }
 
     async function handleSearch(value) {
         setSearch(value);
-    }
-
-    if (loading) {
-        return <h3>Loading products...</h3>
-    }
-
-    if (error) {
-        return <h3>{error.message}</h3>
     }
 
     return (
@@ -48,8 +35,8 @@ function Products() {
             <PageHeader 
                 title={"Products"} 
                 buttonText={"Add Product"}
-                onHandleAdd={handleAddProduct}
-                createLoading={createLoading}
+                onHandleAdd={() => setIsFormOpen(true)}
+                createLoading={createLoading}   
                 createError={createError}
             />
             <SearchBar 
@@ -57,16 +44,16 @@ function Products() {
                 onHandleSearch={handleSearch}
                 placeholder={"Search name or SKU..."}
             />
-            <ProductTable 
+            {error && <h3 className="pl-6 mt-4">{error.message}</h3>}
+            {loading && <h3 className="pl-6 mt-4">Loading products...</h3>}
+            {!loading && !error && (<ProductTable   
                 products={products}
                 onHandleDelete={(id) => deleteProduct(id)}
-            />
-            <ProductForm 
-                onSubmit={isEditing 
-                    ? updateProduct
-                    : createProduct
-                }
-            />
+            />)}
+            {isFormOpen && (<ProductForm 
+                onSubmit={handleCreateProduct} 
+                onHandleCancel={() => setIsFormOpen(false)} 
+            />)}
         </div>
     );
 }
