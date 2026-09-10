@@ -12,7 +12,7 @@ export default function ProductRow({ product, onHandleUpdate, onHandleDelete }) 
                 <ActionCell 
                     product={product} 
                     onHandleDelete={() => onHandleDelete(product.id)} 
-                    onHandleUpdate={() => onHandleUpdate(product.id)}
+                    onHandleUpdate={() => onHandleUpdate(product)}
                 />
             </td>
         </tr>

@@ -7,6 +7,7 @@ import ProductForm from "../components/products/ProductForm";
 
 function Products() {
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState(null);
 
     const {
         products,
@@ -17,6 +18,7 @@ function Products() {
         createProduct,
         createLoading,
         createError,
+        updateProduct,
         deleteProduct
     } = useProducts();
 
@@ -30,12 +32,35 @@ function Products() {
         setSearch(value);
     }
 
+    function openCreateForm() {
+        setEditingProduct(null);
+        setIsFormOpen(true);
+    }
+
+    function openUpdateForm(product) {
+        setEditingProduct(product);
+        setIsFormOpen(true);
+    }
+
+    function closeForm() {
+        setEditingProduct(null);
+        setIsFormOpen(false);
+    }
+
+    async function handleSaveProduct(product) {
+        const response = editingProduct 
+            ? await updateProduct(editingProduct.id, product)
+            : await createProduct(product);
+
+        return response;
+    }
+
     return (
         <div>
             <PageHeader 
                 title={"Products"} 
                 buttonText={"Add Product"}
-                onHandleAdd={() => setIsFormOpen(true)}
+                onHandleAdd={openCreateForm}
                 createLoading={createLoading}   
                 createError={createError}
             />
@@ -49,10 +74,12 @@ function Products() {
             {!loading && !error && (<ProductTable   
                 products={products}
                 onHandleDelete={(id) => deleteProduct(id)}
+                onHandleUpdate={openUpdateForm}
             />)}
             {isFormOpen && (<ProductForm 
-                onSubmit={handleCreateProduct} 
-                onHandleCancel={() => setIsFormOpen(false)} 
+                product={editingProduct}
+                onSubmit={handleSaveProduct} 
+                onHandleCancel={closeForm} 
             />)}
         </div>
     );

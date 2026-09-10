@@ -27,6 +27,12 @@ function useForm({ initialValue, validate, onSubmit }) {
             ...values,
             [name]: value
         }));
+
+        setErrors(currentErrors => ({
+            ...currentErrors,
+            [name]: ""
+        }));
+        setMessage("");
     }
 
     async function handleSubmit(e) {
@@ -42,6 +48,7 @@ function useForm({ initialValue, validate, onSubmit }) {
         try {
             setLoading(true);
             const response = await onSubmit(values);
+            reset();
             setMessage(response.message);
         } catch (e) {
             const error = normalizeError(e);
