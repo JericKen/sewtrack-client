@@ -9,7 +9,20 @@ const INITIAL_VALUE = {
 };
 
 function isBlank(value) {
-    return String(value).trim === "";
+    return String(value).trim() === "";
+}
+
+function toFormValues(product) {
+    if (!product) {
+        return INITIAL_VALUE;
+    }
+
+    return {
+        name: product.name ?? "",
+        category_id: product.category_id ?? "",
+        quantity: product.quantity ?? "",
+        selling_price: product.selling_price ?? ""
+    };
 }
 
 function validate(values) {
@@ -41,7 +54,7 @@ function validate(values) {
     return errors;
 }
 
-function createProductPayload(values) {
+function toCreateProductPayload(values) {
     return {
         name: values.name.trim(),
         category_id: Number(values.category_id),
@@ -63,12 +76,14 @@ function Field({ label, name, type, values, errors, onChange, disabled }) {
                     className="border rounded"
                 />
             </label>
-            {errors[name] && <p>{errors[name]}</p>}
+            {errors[name] && <p className="text-[red]">{errors[name]}</p>}
         </div>
     );
 }
 
-function ProductForm({ onSubmit, onHandleCancel }) {
+function ProductForm({ product, onSubmit, onHandleCancel }) {
+    const isEditing = Boolean(product);
+
     const {
         values,
         errors,
@@ -77,13 +92,14 @@ function ProductForm({ onSubmit, onHandleCancel }) {
         handleChange,
         handleSubmit
     } = useForm({ 
-        initialValue: INITIAL_VALUE, 
+        initialValue: toFormValues(product), 
         validate, 
-        onSubmit: (formValues) => onSubmit(createProductPayload(formValues)) 
+        onSubmit: (formValues) => onSubmit(toCreateProductPayload(formValues)) 
     });
 
     return (
         <div className="p-6">
+            <h3 className="mb-3">{isEditing ? "Update Product" : "Create Product"}</h3>
             <form onSubmit={handleSubmit}>
                 <Field
                     label="Name"
@@ -115,7 +131,7 @@ function ProductForm({ onSubmit, onHandleCancel }) {
                 <Field  
                     label="Selling Price"
                     name="selling_price"
-                    type="number"
+                    type="decimal"
                     values={values}
                     errors={errors}
                     onChange={handleChange}
@@ -125,7 +141,7 @@ function ProductForm({ onSubmit, onHandleCancel }) {
                     <Button type="submit" disabled={loading}>
                         {loading
                             ? "Saving..."
-                            : "Save"
+                            : isEditing ? "Update" : "Save"
                         }
                     </Button>
                     <Button type="button" onHandleClick={onHandleCancel} disabled={loading}>

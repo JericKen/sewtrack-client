@@ -43,14 +43,14 @@ export default function useProducts() {
         return response;
     }
 
-    async function updateProduct(product) {
-        const response = await editProduct(product);
+    async function updateProduct(id, product) {
+        const response = await editProduct(id, product);
         const updatedProduct = response.data;
 
-        setProducts(currentProducts => [
-            ...currentProducts,
-            updatedProduct
-        ]);
+        setProducts(currentProducts => 
+            currentProducts.map(currentProduct => 
+                currentProduct.id === id ? updatedProduct : currentProduct
+        ))
         return response;
     }
 
