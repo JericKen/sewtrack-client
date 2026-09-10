@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import useProducts from "../hooks/useProducts";
+import useCategories from "../hooks/useCategories";
 import ProductTable from "../components/products/ProductTable";
 import PageHeader from "../components/products/ProductPageHeader";
 import SearchBar from "../components/SearchBar";
@@ -21,6 +22,10 @@ function Products() {
         updateProduct,
         deleteProduct
     } = useProducts();
+
+    const {
+        categories
+    } = useCategories();
 
     async function handleCreateProduct(product) {
         const response = await createProduct(product);
@@ -77,6 +82,7 @@ function Products() {
                 onHandleUpdate={openUpdateForm}
             />)}
             {isFormOpen && (<ProductForm 
+                categories={categories}
                 product={editingProduct}
                 onSubmit={handleSaveProduct} 
                 onHandleCancel={closeForm} 
