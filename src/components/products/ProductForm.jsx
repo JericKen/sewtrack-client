@@ -1,5 +1,7 @@
+import { useState } from "react";
 import useForm from "../../hooks/useForm";
 import Button from "../Button";
+import FormField from "../FormField";
 
 const INITIAL_VALUE = {
     name: "",
@@ -40,7 +42,7 @@ function validate(values) {
     }
 
     if (isBlank(category_id) || !Number(category_id)) {
-        errors.category_id = "Category id is required.";
+        errors.category_id = "Category is required.";
     }
 
     if (isBlank(quantity) || !Number(quantity)) {
@@ -63,25 +65,7 @@ function toCreateProductPayload(values) {
     };
 }
 
-function Field({ label, name, type, values, errors, onChange, disabled }) {
-    return (
-        <div className="mb-3">
-            <label>{label}: {" "}
-                <input 
-                    type={type} 
-                    name={name}
-                    value={values[name]}
-                    onChange={onChange}
-                    disabled={disabled}
-                    className="border rounded"
-                />
-            </label>
-            {errors[name] && <p className="text-[red]">{errors[name]}</p>}
-        </div>
-    );
-}
-
-function ProductForm({ product, onSubmit, onHandleCancel }) {
+function ProductForm({ categories, product, onSubmit, onHandleCancel }) {
     const isEditing = Boolean(product);
 
     const {
@@ -101,7 +85,7 @@ function ProductForm({ product, onSubmit, onHandleCancel }) {
         <div className="p-6">
             <h3 className="mb-3">{isEditing ? "Update Product" : "Create Product"}</h3>
             <form onSubmit={handleSubmit}>
-                <Field
+                <FormField
                     label="Name"
                     name="name"
                     type="text"
@@ -110,16 +94,17 @@ function ProductForm({ product, onSubmit, onHandleCancel }) {
                     onChange={handleChange}
                     disabled={loading}
                 />
-                <Field
-                    label="Category Id"
+                <FormField 
+                    label="Category"
                     name="category_id"
-                    type="number"
-                    values={values} 
+                    type="select"
+                    selectValues={categories}
+                    values={values}
                     errors={errors}
                     onChange={handleChange}
                     disabled={loading}
                 />
-                <Field
+                <FormField
                     label="Quantity"
                     name="quantity"
                     type="number"
@@ -128,7 +113,7 @@ function ProductForm({ product, onSubmit, onHandleCancel }) {
                     onChange={handleChange}
                     disabled={loading}
                 />
-                <Field  
+                <FormField  
                     label="Selling Price"
                     name="selling_price"
                     type="decimal"
