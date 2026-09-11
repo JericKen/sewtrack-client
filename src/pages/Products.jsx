@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useProducts from "../hooks/useProducts";
 import useCategories from "../hooks/useCategories";
 import ProductTable from "../components/products/ProductTable";
@@ -27,23 +27,13 @@ function Products() {
         categories
     } = useCategories();
 
-    async function handleCreateProduct(product) {
-        const response = await createProduct(product);
-        setIsFormOpen(false);
-        return response;
-    }
-
-    async function handleSearch(value) {
-        setSearch(value);
-    }
-
     function openCreateForm() {
         setEditingProduct(null);
         setIsFormOpen(true);
     }
 
-    function openUpdateForm(product) {
-        setEditingProduct(product);
+    function openUpdateForm(productData) {
+        setEditingProduct(productData);
         setIsFormOpen(true);
     }
 
@@ -52,12 +42,16 @@ function Products() {
         setIsFormOpen(false);
     }
 
-    async function handleSaveProduct(product) {
-        const response = editingProduct 
-            ? await updateProduct(editingProduct.id, product)
-            : await createProduct(product);
+    async function handleSaveProduct(productData) {
+        if (editingProduct) {
+            return updateProduct(
+                editingProduct.id,
+                productData
+            );
+        }
 
-        return response;
+        closeForm();
+        return createProduct(productData);
     }
 
     return (
@@ -71,7 +65,7 @@ function Products() {
             />
             <SearchBar 
                 value={search}
-                onHandleSearch={handleSearch}
+                onHandleSearch={setSearch}
                 placeholder={"Search name or SKU..."}
             />
             {error && <h3 className="pl-6 mt-4">{error.message}</h3>}

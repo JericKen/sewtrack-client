@@ -4,7 +4,7 @@ import {
     removeProduct, 
     editProduct
 } from "../services/productService";
-import { useState, useEffect, useSyncExternalStore } from "react";
+import { useState, useEffect } from "react";
 import normalizeError from "../utils/normalizeError";
 
 export default function useProducts() {
@@ -12,10 +12,12 @@ export default function useProducts() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
     const [message, setMessage] = useState("");
 
     async function fetchProducts(search = "") {
         try {
+            setLoading(true);
             setError(null);
 
             const response = await getProducts(search);
@@ -29,8 +31,20 @@ export default function useProducts() {
     }
 
     useEffect(() => {
-        fetchProducts(search);
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 400);
+
+        return () => {
+            clearTimeout(timer);
+        }
     }, [search]);
+
+    useEffect(() => {
+        if (!debouncedSearch) return;
+
+        fetchProducts(debouncedSearch);
+    }, [debouncedSearch]);
     
     async function createProduct(product) {
         const response = await addProduct(product);
@@ -56,7 +70,7 @@ export default function useProducts() {
 
     async function deleteProduct(id) {
         try {
-            const response = await removeProduct(id);
+            const response = await removeProduct(2);
 
             setProducts(products => products.filter(product => 
                 product.id !== id
@@ -64,9 +78,8 @@ export default function useProducts() {
 
             setMessage(response.message);
         } catch (e) {
-            const error = normalizeError(e);
-            console.log(error);
-            setError(error.message);
+            console.log(normalizeError(e));
+            setError(normalizeError(e));
         } 
     }
 
