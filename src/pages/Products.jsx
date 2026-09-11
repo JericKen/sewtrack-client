@@ -44,6 +44,7 @@ function Products() {
 
     async function handleSaveProduct(productData) {
         if (editingProduct) {
+            closeForm();
             return updateProduct(
                 editingProduct.id,
                 productData

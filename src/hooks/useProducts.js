@@ -4,6 +4,7 @@ import {
     removeProduct, 
     editProduct
 } from "../services/productService";
+import useDebounced from "./useDebounced";
 import { useState, useEffect } from "react";
 import normalizeError from "../utils/normalizeError";
 
@@ -12,7 +13,6 @@ export default function useProducts() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
-    const [debouncedSearch, setDebouncedSearch] = useState("");
     const [message, setMessage] = useState("");
 
     async function fetchProducts(search = "") {
@@ -30,19 +30,9 @@ export default function useProducts() {
         }
     }
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(search);
-        }, 400);
-
-        return () => {
-            clearTimeout(timer);
-        }
-    }, [search]);
+    const debouncedSearch = useDebounced(search);
 
     useEffect(() => {
-        if (!debouncedSearch) return;
-
         fetchProducts(debouncedSearch);
     }, [debouncedSearch]);
     
@@ -53,7 +43,7 @@ export default function useProducts() {
         setProducts(currentProducts => [
             newProduct,
             ...currentProducts
-        ]);
+        ]); 
         return response;
     }
 
@@ -70,7 +60,7 @@ export default function useProducts() {
 
     async function deleteProduct(id) {
         try {
-            const response = await removeProduct(2);
+            const response = await removeProduct(id);
 
             setProducts(products => products.filter(product => 
                 product.id !== id
@@ -78,7 +68,7 @@ export default function useProducts() {
 
             setMessage(response.message);
         } catch (e) {
-            console.log(normalizeError(e));
+            console.log(normalizeError(e    ));
             setError(normalizeError(e));
         } 
     }
