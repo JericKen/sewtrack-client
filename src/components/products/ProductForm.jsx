@@ -1,5 +1,5 @@
 import useForm from "../../hooks/useForm";
-import Button from "../Button";
+import Button from "../ui/Button";
 import FormField from "../FormField";
 
 const INITIAL_VALUE = {
