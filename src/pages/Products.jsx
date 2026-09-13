@@ -5,6 +5,7 @@ import ProductTable from "../components/products/ProductTable";
 import PageHeader from "../components/products/ProductPageHeader";
 import SearchBar from "../components/SearchBar";
 import ProductForm from "../components/products/ProductForm";
+import { useAuth } from "../context/AuthContext";
 
 function Products() {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -26,6 +27,11 @@ function Products() {
     const {
         categories
     } = useCategories();
+
+    const {
+        user,
+        logoutUser
+    } = useAuth();
 
     function openCreateForm() {
         setEditingProduct(null);
@@ -61,10 +67,13 @@ function Products() {
                 title={"Products"} 
                 buttonText={"Add Product"}
                 onHandleAdd={openCreateForm}
+                onHandleLogout={() => logoutUser()}
+                user={user}
                 createLoading={createLoading}   
                 createError={createError}
             />
             <SearchBar 
+                user={user}
                 value={search}
                 onHandleSearch={setSearch}
                 placeholder={"Search name or SKU..."}

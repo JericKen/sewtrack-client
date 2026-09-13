@@ -1,7 +1,8 @@
 import FormField from "../components/FormField";
 import Button from "../components/ui/Button";
 import useForm from "../hooks/useForm";
-import { loginUser } from "../services/authService";
+import * as authService from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 
 const INITIAL_VALUE = {
     email: "",
@@ -44,8 +45,18 @@ function Login() {
         onSubmit: handleSubmitLogin
     });
 
+    const {
+        loginUser,
+        logoutUser
+    } = useAuth();
+
     async function handleSubmitLogin(credentials) {
-        const response = await loginUser(credentials);
+        const response = await authService.loginUser(credentials);
+        if (response.success) {
+            loginUser(response.data);
+        } else {
+            logoutUser();
+        }
         return response;
     }
 
