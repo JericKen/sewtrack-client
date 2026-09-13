@@ -89,7 +89,7 @@ function ProductForm({ categories, product, onSubmit, onHandleCancel }) {
     return (
         <div className="p-6">
             <h3 className="mb-3">{isEditing ? "Update Product" : "Create Product"}</h3>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="w-[400px]">
                 <FormField
                     label="Name"
                     name="name"
@@ -128,13 +128,24 @@ function ProductForm({ categories, product, onSubmit, onHandleCancel }) {
                     disabled={loading}
                 />
                 <div className="flex gap-3">
-                    <Button type="submit" disabled={loading}>
+                    <Button 
+                        variant="primary"
+                        className="btn-small"
+                        type="submit" 
+                        disabled={loading}
+                    >
                         {loading
                             ? "Saving..."
                             : isEditing ? "Update" : "Save"
                         }
                     </Button>
-                    <Button type="button" onHandleClick={onHandleCancel} disabled={loading}>
+                    <Button 
+                        variant="danger"
+                        className="btn-small"
+                        type="button" 
+                        onHandleClick={onHandleCancel} 
+                        disabled={loading}
+                    >
                         Cancel
                     </Button>
                 </div>

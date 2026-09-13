@@ -86,7 +86,7 @@ function Login() {
                             type="submit"
                             disabled={loading}
                             variant="accent"
-                            className="w-100 p-1 bg-[#2F5D53]"
+                            className="btn-small w-100"
                         >
                             {loading
                             ? "Logging in..."

@@ -9,7 +9,7 @@ function PublicRoute({ children }) {
     }
 
     if (user) {
-        return <Navigate to="/Products" replace />;
+        return <Navigate to="/products" replace />;
     }
 
     return children;

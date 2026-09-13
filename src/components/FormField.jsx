@@ -1,7 +1,7 @@
 export default function FormField({ label, name, type, values, errors, onChange, disabled, selectValues }) {
     if (type === "select") 
         return (
-            <div className="mb-3">
+            <div className="mb-3 flex flex-col">
                 <label>{label}: {" "}</label>
                 <select 
                     name={name}
@@ -29,7 +29,7 @@ export default function FormField({ label, name, type, values, errors, onChange,
                 value={values[name]}
                 onChange={onChange}
                 disabled={disabled}
-                className="border rounded"
+                className="border rounded p-2"
             />
             {errors[name] && <p className="text-[red]">{errors[name]}</p>}
         </div>
