@@ -1,6 +1,5 @@
-import { useState } from "react";
 import useForm from "../../hooks/useForm";
-import Button from "../Button";
+import Button from "../ui/Button";
 import FormField from "../FormField";
 
 const INITIAL_VALUE = {
@@ -45,18 +44,24 @@ function validate(values) {
         errors.category_id = "Category is required.";
     }
 
-    if (isBlank(quantity) || !Number(quantity)) {
+    if (isBlank(quantity)) {
         errors.quantity = "Quantity is required.";
+    } else if (!Number.isInteger(Number(quantity))) {
+        errors.quantity = "Quantity must be a whole number.";
+    } else if (Number(quantity) < 0) {
+        errors.quantity = "Quantity cannot be negative.";   
     }
 
-    if (isBlank(selling_price) || !Number(selling_price)) {
+    if (isBlank(selling_price)) {
         errors.selling_price = "Selling price is required.";
+    } else if (Number(selling_price) <= 0) {
+        errors.selling_price = "Selling price must be greater than 0.";
     }
 
     return errors;
 }
 
-function toCreateProductPayload(values) {
+function toProductPayload(values) {
     return {
         name: values.name.trim(),
         category_id: Number(values.category_id),
@@ -78,7 +83,7 @@ function ProductForm({ categories, product, onSubmit, onHandleCancel }) {
     } = useForm({ 
         initialValue: toFormValues(product), 
         validate, 
-        onSubmit: (formValues) => onSubmit(toCreateProductPayload(formValues)) 
+        onSubmit: (formValues) => onSubmit(toProductPayload(formValues)) 
     });
 
     return (
@@ -116,7 +121,7 @@ function ProductForm({ categories, product, onSubmit, onHandleCancel }) {
                 <FormField  
                     label="Selling Price"
                     name="selling_price"
-                    type="decimal"
+                    type="number"
                     values={values}
                     errors={errors}
                     onChange={handleChange}

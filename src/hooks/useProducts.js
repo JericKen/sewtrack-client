@@ -4,7 +4,8 @@ import {
     removeProduct, 
     editProduct
 } from "../services/productService";
-import { useState, useEffect, useSyncExternalStore } from "react";
+import useDebounced from "./useDebounced";
+import { useState, useEffect } from "react";
 import normalizeError from "../utils/normalizeError";
 
 export default function useProducts() {
@@ -16,6 +17,7 @@ export default function useProducts() {
 
     async function fetchProducts(search = "") {
         try {
+            setLoading(true);
             setError(null);
 
             const response = await getProducts(search);
@@ -28,9 +30,11 @@ export default function useProducts() {
         }
     }
 
+    const debouncedSearch = useDebounced(search);
+
     useEffect(() => {
-        fetchProducts(search);
-    }, [search]);
+        fetchProducts(debouncedSearch);
+    }, [debouncedSearch]);
     
     async function createProduct(product) {
         const response = await addProduct(product);
@@ -39,7 +43,7 @@ export default function useProducts() {
         setProducts(currentProducts => [
             newProduct,
             ...currentProducts
-        ]);
+        ]); 
         return response;
     }
 
@@ -64,9 +68,8 @@ export default function useProducts() {
 
             setMessage(response.message);
         } catch (e) {
-            const error = normalizeError(e);
-            console.log(error);
-            setError(error.message);
+            console.log(normalizeError(e    ));
+            setError(normalizeError(e));
         } 
     }
 
